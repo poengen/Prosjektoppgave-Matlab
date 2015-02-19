@@ -1,6 +1,6 @@
 %% Two dimensional steady state poisson solver
 
-function [x, uNum, uAnal, error_L2g, error_L2, ut1,ut2] = poisson2D_steady(n, uHandle, fHandle, g1, g2, g3, g4)
+function [x, uNum, uAnal, error_L2g, error_L2] = poisson2D_steady(n, uHandle, fHandle, g1, g2, g3, g4)
 
 
 %% Defining variables

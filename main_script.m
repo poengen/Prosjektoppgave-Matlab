@@ -25,7 +25,7 @@ g1=@(x) x; g2=@(y) 1; g3=@(x) x; g4=@(y) 0;
 
 % = 100:(doble hver gang):10000 %(minst fem punkter)
 
-n = 100:10:200;
+n = [50,100,200,400];
 GERROR = zeros(1,length(n));
 LERROR = zeros(1,length(n));
 for i = 1:length(n)
@@ -37,15 +37,33 @@ for i = 1:length(n)
 end
 
 %% Error plot
-plot(n,GERROR,'r',n,LERROR,'b');
+figure(1);
+he = 1./(n+1);
+plot(he,GERROR,'r',he,LERROR,'b');
 legend('H1-error','L2-error')
-xlabel('n: number of gridpoints');
+xlabel('h: grid space');
 ylabel('error');
 
-%% Poisson with time integration and such
+%% Loglog-plot of the error
+figure(2);
+he = 1./(n+1);
+
+G2 = log(GERROR(length(n))); G1 = log(GERROR(1));
+L2 = log(LERROR(length(n))); L1 = log(LERROR(1));
+x2 = log(he(length(n))); x1 = log(he(1));
+kG = (G2-G1)/(x2-x1)
+kL = (L2-L1)/(x2-x1)
+
+loglog(he,GERROR,'-*r',he,LERROR,'-*b')
+grid on
+legend('H1-error, k= ','L2-error, k= ')
+xlabel('log(h)');
+ylabel('log(error)');
+
+
 
 %% Plotting
-figure(1);
+figure(3);
 subplot(1,2,1);
 mesh(x,x,uAnal);
 title('Analytical solution');
