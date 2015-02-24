@@ -26,17 +26,17 @@ g1=@(x) x; g2=@(y) 1; g3=@(x) x; g4=@(y) 0;
 % = 100:(doble hver gang):10000 %(minst fem punkter)
 
 n = [50,100,200,400];
-GERROR = zeros(1,length(n));
+%GERROR = zeros(1,length(n));
 LERROR = zeros(1,length(n));
 for i = 1:length(n)
     
     [x, uNum, uAnal, error_L2g, error_L2] = poisson2D_steady(n(i), uHandle, fHandle, g1, g2, g3, g4);
-    GERROR(i) = error_L2g;
+    %GERROR(i) = error_L2g;
     LERROR(i) = error_L2;
     
 end
 
-%% Error plot
+%% Error plot (GERROR LERROR)
 figure(1);
 he = 1./(n+1);
 plot(he,GERROR,'r',he,LERROR,'b');
@@ -44,23 +44,43 @@ legend('H1-error','L2-error')
 xlabel('h: grid space');
 ylabel('error');
 
-%% Loglog-plot of the error
+%% Loglog-plot of the error (GERROR LERROR)
 figure(2);
 he = 1./(n+1);
-
 G2 = log(GERROR(length(n))); G1 = log(GERROR(1));
 L2 = log(LERROR(length(n))); L1 = log(LERROR(1));
 x2 = log(he(length(n))); x1 = log(he(1));
-kG = (G2-G1)/(x2-x1)
-kL = (L2-L1)/(x2-x1)
+kG = (G2-G1)/(x2-x1);
+kL = (L2-L1)/(x2-x1);
 
 loglog(he,GERROR,'-*r',he,LERROR,'-*b')
 grid on
-legend('H1-error, k= ','L2-error, k= ')
+legend(['max-error, k = ',num2str(kG)],['L2-error, k= ',num2str(kL)])
 xlabel('log(h)');
 ylabel('log(error)');
 
 
+%% Error plot (ONLY LERROR)
+figure(1);
+he = 1./(n+1);
+plot(he,LERROR,'b');
+legend('L2-error')
+xlabel('h: grid space');
+ylabel('error');
+
+%% Loglog-plot of the error (ONLY LERROR)
+figure(2);
+he = 1./(n+1);
+
+L2 = log(LERROR(length(n))); L1 = log(LERROR(1));
+x2 = log(he(length(n))); x1 = log(he(1));
+kL = (L2-L1)/(x2-x1);
+
+loglog(he,LERROR,'-*b')
+grid on
+legend(['L2-error, k= ',num2str(kL)])
+xlabel('log(h)');
+ylabel('log(error)');
 
 %% Plotting
 figure(3);

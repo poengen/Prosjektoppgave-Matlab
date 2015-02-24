@@ -65,20 +65,32 @@ u = A\f;
 uNum(2:n+1,2:n+1) = reshape(u,n,n);
 
 %% Gradient L2-Error
-
+%{
 [DNX, DNY] = gradient(uNum);
 [DAX, DAY] = gradient(uAnal);
 
 Xdiff = reshape(DNX,(n+2)*(n+2),1)-reshape(DAX,(n+2)*(n+2),1);
 Ydiff = reshape(DNY,(n+2)*(n+2),1)-reshape(DAY,(n+2)*(n+2),1);
 
-a = norm(Xdiff,2)^2;
-b = norm(Ydiff,2)^2;
-error_L2g = sqrt(a+b);
+U = reshape(uAnal(2:n+1,2:n+1),n*n,1);   %Analytical Solution
+a = norm(Xdiff,2)/norm(U);
+b = norm(Ydiff,2)/norm(U);
+error_L2g = sqrt(a^2+b^2);
+%}
 
 %% L2-Error
 
-diff = reshape(uAnal,(n+2)*(n+2),1) - reshape(uNum,(n+2)*(n+2),1);
-error_L2 = norm(diff,2);
+U = reshape(uAnal(2:n+1,2:n+1),n*n,1);   %Analytical Solution
+LTE = A*U-f;
+E = -A\LTE;
+error_L2g = max(abs(E));
+error_L2 = h*norm(E,2);
+%error_L2 = norm(E,2)/norm(U); %norm
+
+%error_L2g = sqrt(transpose(E)*A*E);
+
+
+
+
 
 end
