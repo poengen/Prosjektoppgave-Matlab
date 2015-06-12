@@ -9,78 +9,48 @@ uHandle = @(x,y) sin(pi*x)*sin(pi*y); %analytical solution
 fHandle = @(x,y) 2*pi^2*sin(pi*x)*sin(pi*y); %load vector
 g1=@(x) 0; g2=@(y) 0; g3=@(x) 0; g4=@(y) 0;
 
-%% Two dimensional steady state poisson problem
-% with non-homogeneous dirichlet boundary
-n = 100;
-uHandle = @(x,y) x;
-fHandle = @(x,y) 0;
-g1=@(x) x; g2=@(y) 1; g3=@(x) x; g4=@(y) 0;
 
 %% Run calculations
-[x, uNum, uAnal, error_L2g, error_L2] = poisson2D_steady(n, uHandle, fHandle, g1, g2, g3, g4);
+[x, uNum, uAnal, eH1, eL2, eMAX] = poisson2D_steady(n, uHandle, fHandle, g1, g2, g3, g4);
 
-%% TESTING
-
-%% Error plot
+%% Error calculations
 
 % = 100:(doble hver gang):10000 %(minst fem punkter)
 
-n = [50,100,200,400];
-%GERROR = zeros(1,length(n));
-LERROR = zeros(1,length(n));
+n = [5,10,20,40,80,160,320];
+%error_H1 = zeros(1,length(n));
+error_L2 = zeros(1,length(n));
+%error_MAX = zeros(1,length(n));
 for i = 1:length(n)
     
-    [x, uNum, uAnal, error_L2g, error_L2] = poisson2D_steady(n(i), uHandle, fHandle, g1, g2, g3, g4);
-    %GERROR(i) = error_L2g;
-    LERROR(i) = error_L2;
+    [x, uNum, uAnal, eH1, eL2, eMAX] = poisson2D_steady(n(i), uHandle, fHandle, g1, g2, g3, g4);
+    %error_H1(i) = eH1;
+    error_L2(i) = eL2;
+    %error_MAX(i) = eMAX;
     
 end
-
-%% Error plot (GERROR LERROR)
-figure(1);
-he = 1./(n+1);
-plot(he,GERROR,'r',he,LERROR,'b');
-legend('H1-error','L2-error')
-xlabel('h: grid space');
-ylabel('error');
-
-%% Loglog-plot of the error (GERROR LERROR)
-figure(2);
-he = 1./(n+1);
-G2 = log(GERROR(length(n))); G1 = log(GERROR(1));
-L2 = log(LERROR(length(n))); L1 = log(LERROR(1));
-x2 = log(he(length(n))); x1 = log(he(1));
-kG = (G2-G1)/(x2-x1);
-kL = (L2-L1)/(x2-x1);
-
-loglog(he,GERROR,'-*r',he,LERROR,'-*b')
-grid on
-legend(['max-error, k = ',num2str(kG)],['L2-error, k= ',num2str(kL)])
-xlabel('log(h)');
-ylabel('log(error)');
-
 
 %% Error plot (ONLY LERROR)
 figure(1);
 he = 1./(n+1);
-plot(he,LERROR,'b');
-legend('L2-error')
+plot(he,error_L2,'b');
+legend('Relative L2-error')
 xlabel('h: grid space');
 ylabel('error');
 
 %% Loglog-plot of the error (ONLY LERROR)
 figure(2);
 he = 1./(n+1);
-
-L2 = log(LERROR(length(n))); L1 = log(LERROR(1));
 x2 = log(he(length(n))); x1 = log(he(1));
-kL = (L2-L1)/(x2-x1);
 
-loglog(he,LERROR,'-*b')
+L2_2 = log(error_L2(length(n))); L2_1 = log(error_L2(1));
+kL2 = (L2_2-L2_1)/(x2-x1); % slope for the L2-norm
+
+loglog(he,error_L2,'-*b')
 grid on
-legend(['L2-error, k= ',num2str(kL)])
-xlabel('log(h)');
-ylabel('log(error)');
+legend(['Relative L2-error, k = ',num2str(kL2)])
+xlabel('Grid space h, log-scale');
+ylabel('Relative L2-error, log-scale');
 
 %% Plotting
 figure(3);

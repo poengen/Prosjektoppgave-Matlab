@@ -2,6 +2,7 @@
 % conditions
 
 %% Image initial condition
+PIC2 = imread('init_pic2.jpg');
 PIC = imread('init_pic2.jpg');
 PIC = rgb2gray(PIC);
 PIC = double(PIC);
@@ -14,7 +15,7 @@ PIC = ones(n,n)-PIC;
 hx = 1/(n+1); %intervals
 
 ht = 0.001; %time step
-k = 500; %number of time steps
+k = 100; %number of time steps
 T = ht*k; %total time
 
 %% The Grid
@@ -42,34 +43,15 @@ p(:,1) = reshape(PIC,n*n,1); %initial condition
 pSol = zeros(n+2,n+2,k);
 
 %boundary functions
-f1 = @(x,t) 0.5*sin(t); %y=0
-f2 = @(y,t) 0.5*(1-y)*sin(t); %x=1
-f3 = @(x,t) (1-x)*sin(t); %y=1
-f4 = @(y,t) 0.5*(1+y)*sin(t); %x=0
+%f1 = @(x,t) 0.5*sin(t); %y=0
+%f2 = @(y,t) 0.5*(1-y)*sin(t); %x=1
+%f3 = @(x,t) (1-x)*sin(t); %y=1
+%f4 = @(y,t) 0.5*(1+y)*sin(t); %x=0
 
 %% Solve the linear system Au=f
 
-for i = 1:k-1
-    f = zeros(n*n,1);
-    for j=1:n %boundary independent of time
-        f(j) = f(j) + f1(x(j+1),ht*i);
-        f(n^2-n+j) = f(n^2-n+j) + f3(x(j+1),i*ht);
-        f(n*j) = f(n*j) + f2(x(j+1),i*ht);
-        f(n*j-n+1) = f(n*j-n+1) + f4(x(j+1),i*ht);
-        
-        pSol(j+1,1,i+1) = f1(x(j+1),(i+1)*ht);
-        pSol(n+2,j+1,i+1) = f2(x(j+1),(i+1)*ht);
-        pSol(j+1,n+2,i+1) = f3(x(j+1),(i+1)*ht);
-        pSol(1,j+1,i+1) = f4(x(j+1),(i+1)*ht);
-    end
-    %corners
-    pSol(1,1,i+1) = f1(0,(i+1)*ht);
-    pSol(n+2,1,i+1) = f1(1,(i+1)*ht);
-    pSol(n+2,n+2,i+1) = f3(1,(i+1)*ht);
-    pSol(1,n+2,i+1) = f3(0,(i+1)*ht);
-    
-    p(:,i+1) = G\(p(:,i)+ht/hx^2*f);
-     
+for i = 1:k-1  
+    p(:,i+1) = G\p(:,i); %G\(p(:,i)+ht/hx^2*f); 
 end
 
 %% Composing the solution matrix Usol
@@ -85,3 +67,34 @@ for i=1:k
     axis([0 1 0 1 -0.6 1]);
     pause(0.5);
 end
+
+%% rotate
+
+B = imrotate(PIC2,-90);
+%% Making figures
+
+
+figure(1);
+subplot(2,3,1)
+image(B);
+
+subplot(2,3,2)
+surf(x,x,pSol(:,:,1));
+    axis([0 1 0 1 -0.6 1]);
+    
+subplot(2,3,3)
+surf(x,x,pSol(:,:,2));
+    axis([0 1 0 1 -0.6 1]);
+    
+subplot(2,3,4)
+surf(x,x,pSol(:,:,5));
+    axis([0 1 0 1 -0.6 1]);
+    
+subplot(2,3,5)
+surf(x,x,pSol(:,:,10));
+    axis([0 1 0 1 -0.6 1]);
+    
+subplot(2,3,6)
+surf(x,x,pSol(:,:,100));
+    axis([0 1 0 1 -0.6 1]);
+
